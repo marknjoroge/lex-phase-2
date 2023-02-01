@@ -82,10 +82,11 @@ extern char* yytext;
 extern void yyerror(char *msg);
 int varcount=0;
 int curscope=0;
+struct variable var[20];
 
 
 /* Line 189 of yacc.c  */
-#line 89 "Phase2.tab.c"
+#line 90 "Phase2.tab.c"
 
 /* Enabling traces.  */
 #ifndef YYDEBUG
@@ -157,12 +158,12 @@ typedef union YYSTYPE
 {
 
 /* Line 214 of yacc.c  */
-#line 16 "Phase2.y"
+#line 17 "Phase2.y"
 struct variable symp;
 
 
 /* Line 214 of yacc.c  */
-#line 166 "Phase2.tab.c"
+#line 167 "Phase2.tab.c"
 } YYSTYPE;
 # define YYSTYPE_IS_TRIVIAL 1
 # define yystype YYSTYPE /* obsolescent; will be withdrawn */
@@ -174,7 +175,7 @@ struct variable symp;
 
 
 /* Line 264 of yacc.c  */
-#line 178 "Phase2.tab.c"
+#line 179 "Phase2.tab.c"
 
 #ifdef short
 # undef short
@@ -474,10 +475,10 @@ static const yytype_int8 yyrhs[] =
 /* YYRLINE[YYN] -- source line where rule number YYN was defined.  */
 static const yytype_uint8 yyrline[] =
 {
-       0,    36,    36,    37,    38,    39,    39,    39,    39,    39,
-      39,    40,    47,    48,    49,    50,    56,    57,    58,    65,
-      72,    75,    84,    93,    95,    96,   101,   105,   109,   114,
-     116,   117,   119,   120,   121,   125,   129
+       0,    37,    37,    38,    39,    40,    40,    40,    40,    40,
+      40,    41,    50,    51,    52,    53,    59,    60,    61,    68,
+      75,    78,    87,    96,    98,    99,   104,   108,   112,   117,
+     119,   120,   122,   123,   124,   128,   132
 };
 #endif
 
@@ -1431,19 +1432,21 @@ yyreduce:
         case 11:
 
 /* Line 1455 of yacc.c  */
-#line 40 "Phase2.y"
+#line 41 "Phase2.y"
     {
                         if (findvarInScop((yyvsp[(2) - (2)].symp).name, curscope) == 1) 
                             semantic_error("Declaration Error: Variable already declared.");
-                        insertvar((yyvsp[(2) - (2)].symp).name, (yyvsp[(1) - (2)].symp).name);
-                        varcount++;
+                        else {
+                            insertvar((yyvsp[(2) - (2)].symp).name, (yyvsp[(1) - (2)].symp).name);
+                            varcount++;
+                        }
                     ;}
     break;
 
   case 15:
 
 /* Line 1455 of yacc.c  */
-#line 50 "Phase2.y"
+#line 53 "Phase2.y"
     {
                         if (strcmp(findtype((yyvsp[(1) - (3)].symp).name, curscope), "XXX") != 0) 
                             semantic_error("Initialision Error: Variable not declared.");
@@ -1455,7 +1458,7 @@ yyreduce:
   case 18:
 
 /* Line 1455 of yacc.c  */
-#line 58 "Phase2.y"
+#line 61 "Phase2.y"
     { 
                         if(sizeof((yyvsp[(1) - (3)].symp)) == sizeof((yyvsp[(3) - (3)].symp)))
                             // $$=$1==$3;
@@ -1468,7 +1471,7 @@ yyreduce:
   case 19:
 
 /* Line 1455 of yacc.c  */
-#line 65 "Phase2.y"
+#line 68 "Phase2.y"
     { 
                         if(sizeof((yyvsp[(1) - (3)].symp)) == sizeof((yyvsp[(3) - (3)].symp)))
                             // $$=$1!=$3;
@@ -1481,7 +1484,7 @@ yyreduce:
   case 21:
 
 /* Line 1455 of yacc.c  */
-#line 75 "Phase2.y"
+#line 78 "Phase2.y"
     { 
                         if ((strcmp(findtype((yyvsp[(1) - (3)].symp).name, curscope), "int") 
                                 || strcmp(findtype((yyvsp[(1) - (3)].symp).name, curscope), "float"))
@@ -1496,7 +1499,7 @@ yyreduce:
   case 22:
 
 /* Line 1455 of yacc.c  */
-#line 84 "Phase2.y"
+#line 87 "Phase2.y"
     { 
                         if ((strcmp(findtype((yyvsp[(1) - (3)].symp).name, curscope), "int") 
                                 || strcmp(findtype((yyvsp[(1) - (3)].symp).name, curscope), "float"))
@@ -1511,14 +1514,14 @@ yyreduce:
   case 24:
 
 /* Line 1455 of yacc.c  */
-#line 95 "Phase2.y"
+#line 98 "Phase2.y"
     { (yyval.symp) = (yyvsp[(2) - (3)].symp);curscope++; ;}
     break;
 
   case 25:
 
 /* Line 1455 of yacc.c  */
-#line 96 "Phase2.y"
+#line 99 "Phase2.y"
     {
                             strcpy((yyval.symp).type ,"int");
                             strcpy((yyval.symp).name,"");   
@@ -1528,7 +1531,7 @@ yyreduce:
   case 26:
 
 /* Line 1455 of yacc.c  */
-#line 101 "Phase2.y"
+#line 104 "Phase2.y"
     {
                         strcpy((yyval.symp).type ,"float");
                         strcpy((yyval.symp).name,"");   
@@ -1538,7 +1541,7 @@ yyreduce:
   case 27:
 
 /* Line 1455 of yacc.c  */
-#line 105 "Phase2.y"
+#line 108 "Phase2.y"
     {
                         strcpy((yyval.symp).type ,"bool");
                         strcpy((yyval.symp).name,"");   
@@ -1548,7 +1551,7 @@ yyreduce:
   case 28:
 
 /* Line 1455 of yacc.c  */
-#line 109 "Phase2.y"
+#line 112 "Phase2.y"
     {
                         strcpy((yyval.symp).type ,"bool");
                         strcpy((yyval.symp).name,"");   
@@ -1558,7 +1561,7 @@ yyreduce:
   case 34:
 
 /* Line 1455 of yacc.c  */
-#line 121 "Phase2.y"
+#line 124 "Phase2.y"
     {
                         if (sizeof((yyvsp[(3) - (5)].symp)) != 1) semantic_error("Type Error: Condition is not a Boolean.");
                     ;}
@@ -1567,7 +1570,7 @@ yyreduce:
   case 35:
 
 /* Line 1455 of yacc.c  */
-#line 125 "Phase2.y"
+#line 128 "Phase2.y"
     {
                         if (sizeof((yyvsp[(3) - (7)].symp)) != 0) semantic_error("Type Error: Condition is not a Boolean.");
                     ;}
@@ -1576,7 +1579,7 @@ yyreduce:
 
 
 /* Line 1455 of yacc.c  */
-#line 1580 "Phase2.tab.c"
+#line 1583 "Phase2.tab.c"
       default: break;
     }
   YY_SYMBOL_PRINT ("-> $$ =", yyr1[yyn], &yyval, &yyloc);
@@ -1788,7 +1791,7 @@ yyreturn:
 
 
 /* Line 1675 of yacc.c  */
-#line 131 "Phase2.y"
+#line 134 "Phase2.y"
 
 int main(int argc, char *argv[]){
 
@@ -1804,8 +1807,8 @@ int main(int argc, char *argv[]){
     return 0;
 }
 
- void yyerror (char* msg) {
-    printf(" %s  in Line : %d \n",msg,(yylineno));
+void yyerror (char* msg) {
+    printf("Line %d: %s near %s\n", yylineno, msg, yytext);
 }
 
 void semantic_error (char msg[]) {

@@ -84,7 +84,7 @@ typedef union YYSTYPE
 {
 
 /* Line 1676 of yacc.c  */
-#line 16 "Phase2.y"
+#line 17 "Phase2.y"
 struct variable symp;
 
 

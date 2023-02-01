@@ -11,6 +11,7 @@ extern char* yytext;
 extern void yyerror(char *msg);
 int varcount=0;
 int curscope=0;
+struct variable var[20];
 %}
 
 %union {struct variable symp;}
@@ -40,8 +41,10 @@ statement : Dec_stmt | assignment_stmt |  print_stmt  |read_stmt|  condition_stm
 Dec_stmt: Type ID  {
                         if (findvarInScop($2.name, curscope) == 1) 
                             semantic_error("Declaration Error: Variable already declared.");
-                        insertvar($2.name, $1.name);
-                        varcount++;
+                        else {
+                            insertvar($2.name, $1.name);
+                            varcount++;
+                        }
                     }
         ;
 Type : INT 
@@ -144,7 +147,7 @@ int main(int argc, char *argv[]){
 }
 
 void yyerror (char* msg) {
-    printf(" %s  in Line : %d \n",msg,(yylineno));
+    printf("Line %d: %s near %s\n", yylineno, msg, yytext);
 }
 
 void semantic_error (char msg[]) {
