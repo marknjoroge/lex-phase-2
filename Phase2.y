@@ -50,7 +50,7 @@ Dec_stmt        : Type ID  {
                             // printTable();
                             semantic_error("Declaration Error: Variable already declared.");
                         else {
-                            printf("Inserting %s + %s + %s + %s + %s + %s", $2.name, $1.name, $2.type, $1.type, $2, $1);
+                            printf("Inserting %s + %s + %s + %s + %s + %s", yytext, $1.name, $2.type, $1.type, $2, $1);
                             insertvar($2.name, $1.name);
                             varcount++;
                         }
