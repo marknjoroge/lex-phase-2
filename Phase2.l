@@ -2,7 +2,7 @@
 #include "phase2.h"
 #include "Phase2.tab.h"
 #include <stdio.h>
-#include <string.h>
+#include <string.h> 
 extern int yylineno;
 %}
 /* KEEP TRACK OF LINE NUMBER*/
@@ -46,9 +46,7 @@ string {start}.*{end}
 [0-9]+ { return(INT_LITERAL);}
 [0-9]*\.[0-9]+  {return(FLOAT_LITERAL);}
 "##"(.|\n)*"##" {;}
-[\n]   {;}
-[" "]*  {;}
-\t    {;}
+[ \t\n]   {;}
 .   {return ERROR;}
 %%
 

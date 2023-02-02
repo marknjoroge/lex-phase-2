@@ -12,6 +12,9 @@ extern void yyerror(char *msg);
 int varcount=0;
 int curscope=0;
 struct variable var[20];
+
+void printTable();
+void semantic_error();
 %}
 
 %union {struct variable symp;}
@@ -34,48 +37,61 @@ struct variable var[20];
 %token<symp> INT FLOAT BOOLEAN
 %%
 
-Start_Program: START statements END;
-statements : statements statement;
-           | statement ;
-statement : Dec_stmt | assignment_stmt |  print_stmt  |read_stmt|  condition_stmt  | while_stmt  ;
-Dec_stmt: Type ID  {
+Start_Program   : START statements END { printTable(); };
+
+statements      : statements statement
+                | statement 
+                ;
+
+statement       : Dec_stmt | assignment_stmt |  print_stmt  |read_stmt|  condition_stmt  | while_stmt  ;
+
+Dec_stmt        : Type ID  {
                         if (findvarInScop($2.name, curscope) == 1) 
+                            // printTable();
                             semantic_error("Declaration Error: Variable already declared.");
                         else {
+                            printf("Inserting %s + %s + %s + %s + %s + %s", $2.name, $1.name, $2.type, $1.type, $2, $1);
                             insertvar($2.name, $1.name);
                             varcount++;
                         }
                     }
-        ;
-Type : INT 
-|FLOAT 
-|BOOLEAN 
+                ;
+
+Type            : INT 
+                | FLOAT 
+                | BOOLEAN 
+                ;
+
 assignment_stmt : ID ASG bexpression {
                         if (strcmp(findtype($1.name, curscope), "XXX") != 0) 
                             semantic_error("Initialision Error: Variable not declared.");
                         if (sizeof($1) != sizeof($3))
                             semantic_error("Type Error: Types do not match");
-                    };
-bexpression:bexpression AND expression
-|expression             ;
-expression : exp EQ exp { 
+                    }
+                ;
+
+bexpression     : bexpression AND expression
+                |expression             
+                ;
+
+expression      : exp EQ exp { 
                         if(sizeof($1) == sizeof($3))
                             // $$=$1==$3;
                             printf("All good");
                         else
                             semantic_error("Type Error: Can not compare non boolean values."); 
                     }   
-            | exp NE exp { 
+                | exp NE exp { 
                         if(sizeof($1) == sizeof($3))
                             // $$=$1!=$3;
                             printf("All good");
                         else
                             semantic_error("Type Error: Can not compare non boolean values."); 
                     }
-            | exp
-            ;
+                | exp
+                ;
             
-exp : exp PLUS exp   { 
+exp             : exp PLUS exp   { 
                         if ((strcmp(findtype($1.name, curscope), "int") 
                                 || strcmp(findtype($1.name, curscope), "float"))
                             && (strcmp(findtype($3.name, curscope), "int") 
@@ -84,7 +100,7 @@ exp : exp PLUS exp   {
                             printf("All good");
                             // $$ = $1 + $3; 
                     }                  
-    | exp TIMES exp { 
+                | exp TIMES exp { 
                         if ((strcmp(findtype($1.name, curscope), "int") 
                                 || strcmp(findtype($1.name, curscope), "float"))
                             && (strcmp(findtype($3.name, curscope), "int") 
@@ -93,43 +109,47 @@ exp : exp PLUS exp   {
                             printf("All good");
                             // $$ = $1 * $3; 
                     }
-    | factor                        
-    ;
-factor:LPAREN exp RPAREN { $$ = $2;curscope++; }
-    |INT_LITERAL  {
+                | factor                        
+                ;
+
+factor          : LPAREN exp RPAREN { $$ = $2;curscope++; }
+                | INT_LITERAL  {
                             strcpy($$.type ,"int");
                             strcpy($$.name,"");   
                         }
                     
-    |FLOAT_LITERAL  {
+                | FLOAT_LITERAL  {
                         strcpy($$.type ,"float");
                         strcpy($$.name,"");   
                     }
-    |TRUE {
-                        strcpy($$.type ,"bool");
-                        strcpy($$.name,"");   
+                | TRUE {
+                        // $$ = true; 
                     }
-    |FALSE {
-                        strcpy($$.type ,"bool");
-                        strcpy($$.name,"");   
+                | FALSE {
+                        // $$ = false;  
                     }
+                | ID 
+                ;
 
-    | ID 
-    ;
-print_stmt : PRINT LPAREN ID RPAREN 
-| PRINT LPAREN STRING_LITERAL RPAREN
-;
-condition_stmt:if_head statements CL ENDE 
-              |if_head statements CL ENDE ELSE OP statements CL ENDE ;
-if_head : IF LPAREN bexpression RPAREN OP {
-                        if (sizeof($3) != 1) semantic_error("Type Error: Condition is not a Boolean.");
+print_stmt      : PRINT LPAREN ID RPAREN 
+                | PRINT LPAREN STRING_LITERAL RPAREN
+                ;
+
+condition_stmt  : if_head statements CL ENDE 
+                | if_head statements CL ENDE ELSE OP statements CL ENDE 
+                ;
+
+if_head         : IF LPAREN bexpression RPAREN OP {
+                        if (sizeof($3) != 44) semantic_error("Type Error: Condition is not a Boolean.");
                     }
-                    ;
-while_stmt : WHILE LPAREN bexpression RPAREN OP statements CL {
-                        if (sizeof($3) != 0) semantic_error("Type Error: Condition is not a Boolean.");
+                ;
+
+while_stmt      : WHILE LPAREN bexpression RPAREN OP statements CL {
+                        if (sizeof($3) != 44) semantic_error("Type Error: Condition is not a Boolean.");
                     }
-            ;
-read_stmt: ID ASG READ LPAREN RPAREN;
+                ;
+
+read_stmt       : ID ASG READ LPAREN RPAREN;
 
 %%
 int main(int argc, char *argv[]){
@@ -151,7 +171,13 @@ void yyerror (char* msg) {
 }
 
 void semantic_error (char msg[]) {
-    printf("Line %d: %s near %s\n", yylineno, msg, yytext);
+    printf("\nLine %d: %s near %s\n", yylineno, msg, yytext);
+}
+
+void printTable() {
+    for (int i = 0; i < varcount; i++) {
+        printf("%s , - %s \n", var[i].name, var[i].type);
+    }
 }
 
 int findvar(char name[], int scope) {
@@ -181,6 +207,7 @@ void insertvar(char name[], char type[]) {
         strcpy(var[varcount].name, name);
         strcpy(var[varcount].type, type);
         var[varcount].scope = curscope;
+        varcount++;
         return ;
     }
 }
