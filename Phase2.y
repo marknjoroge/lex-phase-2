@@ -25,7 +25,7 @@ void semantic_error();
 %token IF ELSE READ PRINT WHILE
 %token TIMES PLUS ASG
 %token EQ NE LT LE GT GE AND OR NOT 
-%token ID
+%token ID INT FLOAT BOOLEAN
 %right ASG
 %left OR
 %left AND
@@ -34,10 +34,11 @@ void semantic_error();
 %left TIMES
 %nonassoc NOT
 %type<symp> bexpression expression exp factor Type ID
-%token<symp> INT FLOAT BOOLEAN
+%type<symp> INT FLOAT BOOLEAN
 %%
 
-Start_Program   : START statements END { printTable(); };
+Start_Program   : START statements END
+// Start_Program   : START statements END { printTable(); };
 
 statements      : statements statement
                 | statement 
@@ -46,89 +47,110 @@ statements      : statements statement
 statement       : Dec_stmt | assignment_stmt |  print_stmt  |read_stmt|  condition_stmt  | while_stmt  ;
 
 Dec_stmt        : Type ID  {
-                        if (findvarInScop($2.name, curscope) == 1) 
+                        if (findvarInScop(yytext, curscope) == 1) 
                             // printTable();
-                            semantic_error("Declaration Error: Variable already declared.");
+                            semantic_error("\nDeclaration Error: Variable already declared.");
                         else {
-                            printf("Inserting %s + %s + %s + %s + %s + %s", yytext, $1.name, $2.type, $1.type, $2, $1);
-                            insertvar($2.name, $1.name);
-                            varcount++;
+                            // printf("\nInserting %s + %s + %s + %s + %s + %s", $2.name, $1.name, $2.type, $1.type, $2, $1);
+                            insertvar(yytext, $1.name);
                         }
                     }
                 ;
 
-Type            : INT 
-                | FLOAT 
-                | BOOLEAN 
+Type            : INT { strcpy($$.name, "int"); }
+                | FLOAT  { strcpy($$.name, "float"); }
+                | BOOLEAN  { strcpy($$.name, "boolean"); }
                 ;
 
 assignment_stmt : ID ASG bexpression {
-                        if (strcmp(findtype($1.name, curscope), "XXX") != 0) 
-                            semantic_error("Initialision Error: Variable not declared.");
-                        if (sizeof($1) != sizeof($3))
-                            semantic_error("Type Error: Types do not match");
+                        // printf("\nEXP type '%s'", $3.type);
+                        if (findvarInScop(yylval.symp.name, curscope) == 0) {
+                            char msg[] = "Initialision Error: Variable ";
+                            strcat(msg, yylval.symp.name);
+                            strcat(msg, " not declared.");
+                            semantic_error(msg);
+                        }
+                        // printf("\n'%s' - '%s'", findtype(yylval.symp.name, curscope), $3.type);
+                        else if (strcmp(findtype(yylval.symp.name, curscope), $3.type) != 0) {
+                            char msg[30] = "Type Error: ";
+                            strcat(msg, findtype(yylval.symp.name, curscope));
+                            strcat(msg, " incompatible to ");
+                            strcat(msg, $3.type);
+                            // printf("\n'%s' - '%s'", findtype(yylval.symp.name, curscope), $3.type);
+                            semantic_error(msg);
+                        }
                     }
                 ;
 
 bexpression     : bexpression AND expression
-                |expression             
+                | expression             
                 ;
 
 expression      : exp EQ exp { 
-                        if(sizeof($1) == sizeof($3))
-                            // $$=$1==$3;
-                            printf("All good");
-                        else
-                            semantic_error("Type Error: Can not compare non boolean values."); 
+                        // printf("\nad '%s' and '%s'", $1.type, $3.type);
+                        if(strcmp($1.type, $3.type) != 0){
+                            char msg[] = "Type Error: Can not compare non boolean values. Comparing ";
+                            strcat(msg, $1.type);
+                            strcat(msg, " to ");
+                            strcat(msg, $3.type);
+                            semantic_error(msg);
+                        } else {
+                            // printf("comparing");
+                            strcpy($$.type, "bool");
+                        }
                     }   
                 | exp NE exp { 
-                        if(sizeof($1) == sizeof($3))
-                            // $$=$1!=$3;
-                            printf("All good");
-                        else
-                            semantic_error("Type Error: Can not compare non boolean values."); 
+                        // printf("\nad '%s' and '%s'", $1.type, $3.type);
+                        if(strcmp($1.type, $3.type) != 0){
+                            char msg[] = "Type Error: Can not compare non boolean values. Comparing ";
+                            strcat(msg, $1.type);
+                            strcat(msg, " to ");
+                            strcat(msg, $3.type);
+                            semantic_error(msg);
+                        } else {
+                            // printf("comparing");
+                            strcpy($$.type, "bool");
+                        }
                     }
-                | exp
+                | exp {
+                        // printf("\nExpression %d %s", yylineno, yytext);
+                    }
                 ;
             
 exp             : exp PLUS exp   { 
-                        if ((strcmp(findtype($1.name, curscope), "int") 
-                                || strcmp(findtype($1.name, curscope), "float"))
-                            && (strcmp(findtype($3.name, curscope), "int") 
-                                || strcmp(findtype($3.name, curscope), "int")) )
-                                
-                            printf("All good");
-                            // $$ = $1 + $3; 
+                        // printf("\nad '%s' and '%s'", $1.type, $3.type);
+                        if (strcmp($1.type, "float") == 0 || strcmp($3.type, "float") == 0)
+                            strcpy($$.type, "float");
+                        // printf("\nAdding");
                     }                  
                 | exp TIMES exp { 
-                        if ((strcmp(findtype($1.name, curscope), "int") 
-                                || strcmp(findtype($1.name, curscope), "float"))
-                            && (strcmp(findtype($3.name, curscope), "int") 
-                                || strcmp(findtype($3.name, curscope), "int")) )
+                        if (strcmp($1.type, "float") == 0 || strcmp($3.type, "float") == 0)
+                            strcpy($$.type, "float");
 
-                            printf("All good");
-                            // $$ = $1 * $3; 
+                        // printf("\nMultiplying");
                     }
-                | factor                        
+                | factor
                 ;
 
-factor          : LPAREN exp RPAREN { $$ = $2;curscope++; }
+factor          : LPAREN exp RPAREN { curscope++; }
                 | INT_LITERAL  {
-                            strcpy($$.type ,"int");
-                            strcpy($$.name,"");   
-                        }
-                    
+                        strcpy($$.type ,"int");
+                    }
                 | FLOAT_LITERAL  {
                         strcpy($$.type ,"float");
-                        strcpy($$.name,"");   
                     }
                 | TRUE {
-                        // $$ = true; 
+                        strcpy($$.type ,"bool");
                     }
                 | FALSE {
-                        // $$ = false;  
+                        strcpy($$.type ,"bool");
                     }
-                | ID 
+                | ID { 
+                        strcpy($$.name, yytext);
+                        if(findvarInScop(yytext, curscope)) {
+                            strcpy($$.type, findtype(yytext, curscope));
+                        }
+                    }
                 ;
 
 print_stmt      : PRINT LPAREN ID RPAREN 
@@ -140,12 +162,14 @@ condition_stmt  : if_head statements CL ENDE
                 ;
 
 if_head         : IF LPAREN bexpression RPAREN OP {
-                        if (sizeof($3) != 44) semantic_error("Type Error: Condition is not a Boolean.");
+                        if (strcmp($3.type, "bool") != 0)
+                            semantic_error("Type Error: Condition is not a Boolean.");
                     }
                 ;
 
 while_stmt      : WHILE LPAREN bexpression RPAREN OP statements CL {
-                        if (sizeof($3) != 44) semantic_error("Type Error: Condition is not a Boolean.");
+                        if (strcmp($3.type, "bool") != 0)
+                            semantic_error("Type Error: Condition is not a Boolean.");
                     }
                 ;
 
@@ -167,7 +191,7 @@ int main(int argc, char *argv[]){
 }
 
 void yyerror (char* msg) {
-    printf("Line %d: %s near %s\n", yylineno, msg, yytext);
+    printf("\nLine %d: %s near %s\n", yylineno, msg, yytext);
 }
 
 void semantic_error (char msg[]) {
@@ -176,17 +200,19 @@ void semantic_error (char msg[]) {
 
 void printTable() {
     for (int i = 0; i < varcount; i++) {
-        printf("%s , - %s \n", var[i].name, var[i].type);
+        printf("\n\t%s , %s", var[i].name, var[i].type);
     }
 }
 
 int findvar(char name[], int scope) {
     
     for (int i = 0; i < varcount; i++) {
+        // printf("\nVar name %d: '%s' v '%s'. '%d'", i, var[i].name, name, strcmp(var[i].name, name));
         if (strcmp(var[i].name, name) == 0) 
             return 1;
     }
-    return 0; //not found
+    // printf("\n\tNo var found in scope");
+    return 0;
 }
 
 int findvarInScop(char name[], int scope) {
@@ -194,7 +220,7 @@ int findvarInScop(char name[], int scope) {
     
     if (findvar(name, scope) == 1) {
         for (int i = 0; i < varcount; i++) {
-            if (var[i].scope <= scope)
+            if (var[i].scope == scope)
                 return 1;
         }
     }
@@ -203,6 +229,7 @@ int findvarInScop(char name[], int scope) {
 
 void insertvar(char name[], char type[]) {
 
+    if(findvarInScop(name, curscope)) return;
     if (findtype(name, curscope) != type) {
         strcpy(var[varcount].name, name);
         strcpy(var[varcount].type, type);
@@ -214,11 +241,15 @@ void insertvar(char name[], char type[]) {
 
 char* findtype(char name[], int scope) {
 
+    // printTable();
+    // printf("\name '%s' scope '%d'", name, scope);
     if (findvarInScop(name, scope) == 1) {
         for (int i = 0; i < varcount; i++) {
-            if (var[i].name == name && var[i].scope <= scope) return var[i].type;
+            if (strcmp(var[i].name, name) == 0 && var[i].scope == scope) 
+                return var[i].type;
         }
     }
+    // printf("\n\tNo var found in scope");
     return "XXX"; //not found
 }
 

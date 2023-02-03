@@ -41,7 +41,7 @@ string {start}.*{end}
 "<=" {return(LE);}
 ">" {return(GT);}
 ">=" {return(GE);}
-[A-Z]([a-z]|[A-Z]|_|[0-9])* {return(ID);}
+[A-Z]([a-z]|[A-Z]|_|[0-9])* { strcpy(yylval.symp.name, strdup(yytext));return(ID);}
 {string} {return(STRING_LITERAL);}
 [0-9]+ { return(INT_LITERAL);}
 [0-9]*\.[0-9]+  {return(FLOAT_LITERAL);}

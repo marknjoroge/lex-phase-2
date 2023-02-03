@@ -1,10 +1,11 @@
 START 
 int X12
 float ABC1
-X12 = 2
-while ( X12 == 0)
+ABC1 = 2 + 2.33
+while ( X12 == 0 )
 {
     ABC1 = 4.5
+
     if ( true )
     { print ( " Inside IF inside Loop " ) }
     end

@@ -1,23 +1,22 @@
+/* A Bison parser, made by GNU Bison 3.8.2.  */
 
-/* A Bison parser, made by GNU Bison 2.4.1.  */
+/* Bison interface for Yacc-like parsers in C
 
-/* Skeleton interface for Bison's Yacc-like parsers in C
-   
-      Copyright (C) 1984, 1989, 1990, 2000, 2001, 2002, 2003, 2004, 2005, 2006
-   Free Software Foundation, Inc.
-   
+   Copyright (C) 1984, 1989-1990, 2000-2015, 2018-2021 Free Software Foundation,
+   Inc.
+
    This program is free software: you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
    the Free Software Foundation, either version 3 of the License, or
    (at your option) any later version.
-   
+
    This program is distributed in the hope that it will be useful,
    but WITHOUT ANY WARRANTY; without even the implied warranty of
    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
    GNU General Public License for more details.
-   
+
    You should have received a copy of the GNU General Public License
-   along with this program.  If not, see <http://www.gnu.org/licenses/>.  */
+   along with this program.  If not, see <https://www.gnu.org/licenses/>.  */
 
 /* As a special exception, you may create a larger work that contains
    part or all of the Bison parser skeleton and distribute that work
@@ -28,74 +27,92 @@
    special exception, which will cause the skeleton and the resulting
    Bison output files to be licensed under the GNU General Public
    License without this special exception.
-   
+
    This special exception was added by the Free Software Foundation in
    version 2.2 of Bison.  */
 
+/* DO NOT RELY ON FEATURES THAT ARE NOT DOCUMENTED in the manual,
+   especially those whose name start with YY_ or yy_.  They are
+   private implementation details that can be changed or removed.  */
 
-/* Tokens.  */
-#ifndef YYTOKENTYPE
-# define YYTOKENTYPE
-   /* Put the tokens into the symbol table, so that GDB and other debuggers
-      know about them.  */
-   enum yytokentype {
-     START = 258,
-     LPAREN = 259,
-     RPAREN = 260,
-     OP = 261,
-     CL = 262,
-     END = 263,
-     COMMA = 264,
-     ENDE = 265,
-     INT_LITERAL = 266,
-     FLOAT_LITERAL = 267,
-     STRING_LITERAL = 268,
-     TRUE = 269,
-     FALSE = 270,
-     ERROR = 271,
-     IF = 272,
-     ELSE = 273,
-     READ = 274,
-     PRINT = 275,
-     WHILE = 276,
-     TIMES = 277,
-     PLUS = 278,
-     ASG = 279,
-     EQ = 280,
-     NE = 281,
-     LT = 282,
-     LE = 283,
-     GT = 284,
-     GE = 285,
-     AND = 286,
-     OR = 287,
-     NOT = 288,
-     ID = 289,
-     INT = 290,
-     FLOAT = 291,
-     BOOLEAN = 292
-   };
+#ifndef YY_YY_PHASE2_TAB_H_INCLUDED
+# define YY_YY_PHASE2_TAB_H_INCLUDED
+/* Debug traces.  */
+#ifndef YYDEBUG
+# define YYDEBUG 1
+#endif
+#if YYDEBUG
+extern int yydebug;
 #endif
 
+/* Token kinds.  */
+#ifndef YYTOKENTYPE
+# define YYTOKENTYPE
+  enum yytokentype
+  {
+    YYEMPTY = -2,
+    YYEOF = 0,                     /* "end of file"  */
+    YYerror = 256,                 /* error  */
+    YYUNDEF = 257,                 /* "invalid token"  */
+    START = 258,                   /* START  */
+    LPAREN = 259,                  /* LPAREN  */
+    RPAREN = 260,                  /* RPAREN  */
+    OP = 261,                      /* OP  */
+    CL = 262,                      /* CL  */
+    END = 263,                     /* END  */
+    COMMA = 264,                   /* COMMA  */
+    ENDE = 265,                    /* ENDE  */
+    INT_LITERAL = 266,             /* INT_LITERAL  */
+    FLOAT_LITERAL = 267,           /* FLOAT_LITERAL  */
+    STRING_LITERAL = 268,          /* STRING_LITERAL  */
+    TRUE = 269,                    /* TRUE  */
+    FALSE = 270,                   /* FALSE  */
+    ERROR = 271,                   /* ERROR  */
+    IF = 272,                      /* IF  */
+    ELSE = 273,                    /* ELSE  */
+    READ = 274,                    /* READ  */
+    PRINT = 275,                   /* PRINT  */
+    WHILE = 276,                   /* WHILE  */
+    TIMES = 277,                   /* TIMES  */
+    PLUS = 278,                    /* PLUS  */
+    ASG = 279,                     /* ASG  */
+    EQ = 280,                      /* EQ  */
+    NE = 281,                      /* NE  */
+    LT = 282,                      /* LT  */
+    LE = 283,                      /* LE  */
+    GT = 284,                      /* GT  */
+    GE = 285,                      /* GE  */
+    AND = 286,                     /* AND  */
+    OR = 287,                      /* OR  */
+    NOT = 288,                     /* NOT  */
+    ID = 289,                      /* ID  */
+    INT = 290,                     /* INT  */
+    FLOAT = 291,                   /* FLOAT  */
+    BOOLEAN = 292                  /* BOOLEAN  */
+  };
+  typedef enum yytokentype yytoken_kind_t;
+#endif
 
-
+/* Value type.  */
 #if ! defined YYSTYPE && ! defined YYSTYPE_IS_DECLARED
-typedef union YYSTYPE
+union YYSTYPE
 {
-
-/* Line 1676 of yacc.c  */
 #line 20 "Phase2.y"
 struct variable symp;
 
+#line 104 "Phase2.tab.h"
 
-/* Line 1676 of yacc.c  */
-#line 93 "Phase2.tab.h"
-} YYSTYPE;
+};
+typedef union YYSTYPE YYSTYPE;
 # define YYSTYPE_IS_TRIVIAL 1
-# define yystype YYSTYPE /* obsolescent; will be withdrawn */
 # define YYSTYPE_IS_DECLARED 1
 #endif
+
 
 extern YYSTYPE yylval;
 
 
+int yyparse (void);
+
+
+#endif /* !YY_YY_PHASE2_TAB_H_INCLUDED  */
