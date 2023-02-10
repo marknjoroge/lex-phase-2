@@ -114,7 +114,8 @@ expression      : exp EQ exp {
                         }
                     }
                 | exp {
-                    }
+                            strcpy($$.type, $1.type);
+                        }
                 ;
             
 exp             : exp PLUS exp   { 
